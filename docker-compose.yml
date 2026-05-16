@@ -1,0 +1,100 @@
+version: "3.9"
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: investing-mongodb
+    restart: unless-stopped
+    ports:
+      - "27101:27017"  # Host 27018 → Container 27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: CGTECH123dd12kd
+      MONGO_INITDB_ROOT_PASSWORD: CgTech123ddd2kd
+      MONGO_INITDB_DATABASE: investing
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - investing-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: investing-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6382:6379"  # Host 6382 → Container 6379
+    networks:
+      - investing-network
+
+  # Node.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: investing-backend-image
+    container_name: investing-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"  # Expose backend port
+    environment:
+      PAYTABS_PROFILE_ID: 111052
+      PAYTABS_SERVER_KEY: SGJNJDZG2W-JLH6DDLDZN-MBBKZDTHKM
+      PAYTABS_REGION: SAU
+      NODE_ENV: production
+      FIREBASE_PROJECT_ID: investing-80b89
+      FIREBASE_PRIVATE_KEY: -----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCIBv3RvcFibQCB\nVL+aLEsx3R9hD9/0YMWVbIOKk5dwQ2pWSGqHbwiP7cWl0DJC3krNriQCqVZ4QXeb\n8jJ8oRF3zkG9J9xqgm/ENOOuGab/hL1TUEMgFf2goFHEboNqy9BwK4QVIUixGPCX\naKqVC7XoB88UTUGZFR2YFyMjxQf0lQ76xGFAYV3ku8iEMS9/DHFewj5MxCj5YXlk\nY6L3yrl61unsxnMf9954ARCJj8PTEcimAEzkjx5AmPR3WFbz7EwRIMdVUYPjXGoM\nXfAdpBFDa8qm2Xh6Atzl/G1hjfvBJppUa1TvSroXabLRxUC4/wDHFnDXI8vrs8Vm\ncvDTOYaXAgMBAAECggEALQffe9EtFUfPbIEhQskaBYJVsnyeX5ivoCVBsJzme7gd\nmj2z4mzb8UW98gPnt6I+MjPNYQItCXdmwL3ff8mUbkxeD+ADxFC07kex/b8pPRp0\n0IFYD2WoRkX8e6I4KCEbuh51xcb0eQgwEXeJTPkI+ayoHWjr5+EJIIG8VMmTtiAs\nvSNXzi8M2hhRXNZy5vlvXWa8Km3VYw+PdMZ2dihZFI6F3uqV7iLGqFeC8GP2f5j4\n8Nd0a31+bVTLMHF6WkgQ1QdOR63VPOc8oN0Ho3s1K1wQqrwA6E3eccEceAlXUbtx\naSojWAHu4LdYS6MPTfkNB+g94JlhwXVFoIs+pX9U5QKBgQC7LVXBAt0VZY/DlL0P\ncaNsqmJ6WQXyvj8oog+Rs3fhFk7V06Ewz0DlPP7sqn0LDSVP9aXkjqJLK2J8PsEf\n99C198rGVRLUybYlMv4xV5tFVJL4Ymc9CgQ+anZPXJYsUIrRmCjGXiw9q8uJ3l17\nrjaVUHUoSvKOhKEAHgOljERbwwKBgQC6CwOCU+oLEN9W7HJpUstV0Um8EWhM71DY\n6WLkFaDtR33HOtuVaXTMJ4HkV9IIBOMdJKt03JWGi9meH+7rF5KOJpjf/dSbF067\njYAL/BKkRH+CXkGKA4pcGhli7wdbrB38bDFSyDVieJtMZDA8NOvXpjcEm2AfJ/HX\ntdfIrOnAnQKBgQCV+tiIxKOj/nI4tBjdpB/f9ZLdGDIk9H4lL94r0FNRX4+h1GaH\ndro4NSzLNDznuwvXyyy3O/cdJlFO3vXeiLKK7Fdlnktth4dUvUxi+yCmaAMv1aGF\njl4iKSpNoxGNxqfFFBgwAsuOSvbXrP7ZGJoSAJsvwwYiXnGnZ2VipEcuAwKBgCHW\nfvzlZlw85WJZ/zVI6dLiDhc201Gq9Xl+eY4ioPKHXkkuW2IBnEzFosp1bq4mtWhH\nkyfeNxQRu7MW+82mq/FO899Ju7G5u4hBZFjJsFpQWyDLJACGRFQcKyHjd+Mkmw+e\nXhpAb/VJGnX6gwtwVLUUdk1QNVt1WHdzi5vkV1/BAoGAbQZgxlLrBacFvJWSuwEM\nnw7GFNakPgN7AxSx/dYZPlIL7svEIStdzg+FWtfXZFH8te/iP3pN9ax8GMfWaas4\nITeTqSjewE8YMD4rYRB32zu1JzIx8xFM5LL5GZsH8lIuc+ZeomNoSL6VhlN0u/ao\nfKuSufGPGwdNoxaLM6E5aA8=\n-----END PRIVATE KEY-----\n
+      FIREBASE_CLIENT_EMAIL: firebase-adminsdk-fbsvc@investing-80b89.iam.gserviceaccount.com
+      PORT: 5000
+      TZ: Asia/Riyadh
+      MONGODB_URI: mongodb://CGTECH123dd12kd:CgTech123ddd2kd@mongodb:27017/investing_v2?authSource=admin
+      DB_NAME: investing_2
+      JWT_SECRET: your-production-jwt-secret-change-this
+      JWT_EXPIRES_IN: 7d
+      SESSION_SECRET: your-production-session-secret-change-this
+      MAX_FILE_SIZE: 10485760
+      TAX_PERCENTAGE: 15
+      PAYTABS_CALLBACK_URL: https://investing-api.cgtech.com.sa
+      PAYTABS_RETURN_URL: http://localhost:5000/payment/success
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - investing-network
+
+  # Worker
+  worker:
+    image: investing-backend-image
+    container_name: investing-worker
+    restart: unless-stopped
+    command: npm run worker
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - MONGODB_URI=mongodb://CGTECH123dd12kd:CgTech123ddd2kd@mongodb:27017/investing_v2?authSource=admin
+      - DB_NAME=investing_2
+      - JWT_SECRET=your-production-jwt-secret-change-this
+    depends_on:
+      app:
+        condition: service_started
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - investing-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  investing-network:
+    driver: bridge
