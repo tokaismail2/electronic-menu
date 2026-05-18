@@ -6,8 +6,9 @@ export interface IPlan extends Document {
     name: string;
     price: number;
     status: 'active' | 'inactive';
-    billing_cycle: 'monthly' | 'yearly';
+    billing_cycle?: 'monthly' | 'yearly' | 'lifetime';
     description: string;
+    isCustom : boolean;
 }
 
 const PlanSchema: Schema = new Schema({
@@ -19,6 +20,10 @@ const PlanSchema: Schema = new Schema({
         type: Number,
         required: [true, 'Price is required'],
     },
+    isCustom: {
+        type: Boolean,
+        default: false
+    },
     status: {
         type: String,
         enum: ['active', 'inactive'],
@@ -26,8 +31,8 @@ const PlanSchema: Schema = new Schema({
     },
     billing_cycle: {
         type: String,
-        enum: ['monthly', 'yearly'],
-        default: 'monthly'
+        enum: ['monthly', 'yearly','lifetime'],
+        default: null
     },
     description: {
         type: String,

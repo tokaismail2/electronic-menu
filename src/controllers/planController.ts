@@ -18,6 +18,52 @@ export class PlanController {
                 filter.status = req.query.status;
             }
 
+            if (req.query.isCustom !== undefined) {
+                filter.isCustom = req.query.isCustom;
+            }
+
+
+            const plans = await Plan.find(filter)
+                .skip(skip)
+                .limit(limit)
+                .sort({ created_at: -1 });
+
+            const totalPlans = await Plan.countDocuments(filter);
+
+            res.json({
+                success: true,
+                data: {
+                    plans,
+                    pagination: {
+                        page,
+                        limit,
+                        total: totalPlans,
+                        pages: Math.ceil(totalPlans / limit)
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Get all users error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+    }
+    static async getAllPublicPlans(req: AuthRequest, res: Response) {
+        try {
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const skip = (page - 1) * limit;
+
+            const filter: any = {
+                isCustom: false
+            };
+
+            if (req.query.status !== undefined) {
+                filter.status = req.query.status;
+            }
+
 
             const plans = await Plan.find(filter)
                 .skip(skip)
@@ -61,7 +107,9 @@ export class PlanController {
 
             const subscriptions = await Subscription.find({
                 plan_id: plan._id,
-            }).lean();
+            }).populate('user_id', 'user_name')
+                .populate('plan_id', 'name price')
+                .lean();
 
             return res.json({
                 success: true,

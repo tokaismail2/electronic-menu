@@ -9,6 +9,7 @@ export interface ISubscription extends Document {
   end_date: Date;
   status : 'active' | 'inactive';
   payment_method: 'cash' | 'online';
+  isCustom : boolean;
 }
 
 const SubscriptionSchema: Schema = new Schema({
@@ -34,6 +35,10 @@ const SubscriptionSchema: Schema = new Schema({
     type: String,
     enum: ['active', 'inactive'],
     default: 'active'
+  },
+  isCustom: {
+    type: Boolean,
+    default: false
   },
   payment_method: {
     type: String,

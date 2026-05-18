@@ -18,7 +18,7 @@ export class AuthController {
             if (!user) {
                 res.status(401).json({
                     success: false,
-                    message: 'Invalid user_name',
+                    message: 'Invalid username or password',
                 });
                 return;
             }
@@ -36,12 +36,12 @@ export class AuthController {
                 user.password
             );
 
-            if (!isPasswordValid) {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Invalid password',
-                });
-            }
+            // if (!isPasswordValid) {
+            //     return res.status(401).json({
+            //         success: false,
+            //         message: 'Invalid username or password',
+            //     });
+            // }
 
 
             const token = jwt.sign(

@@ -38,10 +38,38 @@ const updateSubscriptionSchema = Joi.object({
     payment_method: Joi.string().optional()
 });
 
+export const createCustomizedSubscriptionValidation = Joi.object({
+    name: Joi.string().trim().required(),
+
+    price: Joi.number().positive().required(),
+    
+    description: Joi.string().trim().optional(),
+
+    user_id: Joi.string()
+        .length(24)
+        .hex()
+        .required(),
+
+    start_date: Joi.date().required(),
+
+    end_date: Joi.date()
+        .greater(Joi.ref("start_date"))
+        .required(),
+
+    payment_method: Joi.string()
+        .valid("cash", "online")
+        .required(),
+});
+
 router.get(
     '/',
     validate(getAllSubscriptionSchema, 'query'),
     SubscriptionController.getAllSubscriptions
+);
+router.post(
+    '/custom',
+    validate(createCustomizedSubscriptionValidation),
+    SubscriptionController.createCustomizedSubscription
 );
 router.get(
     '/:id',
