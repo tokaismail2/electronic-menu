@@ -1,9 +1,17 @@
 
 // Load environment variables FIRST - before any other imports that might use them
 import dotenv from 'dotenv';
-const result = dotenv.config();
-if (result.error) {
-  console.error('Error loading .env file:', result.error);
+import fs from 'fs';
+import path from 'path';
+
+const envPath = path.join(process.cwd(), '.env');
+if (fs.existsSync(envPath)) {
+  const result = dotenv.config();
+  if (result.error) {
+    console.error('Error loading .env file:', result.error);
+  }
+} else if (!process.env.VERCEL) {
+  console.warn('⚠️ .env file not found');
 }
 // Handle uncaught exceptions immediately
 process.on('uncaughtException', (err: Error) => {

@@ -5,8 +5,12 @@ import fs from "fs";
 const logsDir: string = path.join(__dirname, "");
 
 // ✅ Ensure logs directory exists
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
+try {
+  if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+  }
+} catch (error) {
+  console.warn("⚠️ Could not ensure logs directory exists:", (error as Error).message);
 } 
 
 // ✅ Console logger (pretty output in dev)
